@@ -8,6 +8,9 @@ comportando corretamente quando um dos lados fica indisponível.
 > LINQ estão explicadas, com trechos do código, em
 > **[docs/DETALHAMENTO_TECNICO.md](docs/DETALHAMENTO_TECNICO.md)**.
 
+> **No ar:** **[notas-fiscais-ana.vercel.app](https://notas-fiscais-ana.vercel.app)**. O primeiro acesso
+> depois de um tempo parado leva cerca de um minuto: os serviços e o banco acordam do zero.
+
 ---
 
 ## Sumário
@@ -20,6 +23,7 @@ comportando corretamente quando um dos lados fica indisponível.
 - [Inteligência artificial](#inteligência-artificial)
 - [Endpoints](#endpoints)
 - [Estrutura de pastas](#estrutura-de-pastas)
+- [Como está publicado](#como-está-publicado)
 - [Decisões de projeto](#decisões-de-projeto)
 
 ---
@@ -300,6 +304,26 @@ notas-fiscais-microsservicos/
 ├── docker-compose.yml                 # SQL Server em container (alternativa ao LocalDB)
 └── README.md
 ```
+
+---
+
+## Como está publicado
+
+| Parte | Onde |
+|---|---|
+| Front-end | Vercel |
+| Estoque e Faturamento | Azure App Service (Linux, .NET 8) |
+| Banco | Azure SQL Database serverless, na oferta gratuita |
+
+**Um schema por serviço, com permissão separada.** Localmente cada serviço tem o próprio
+banco. Na nuvem, a oferta gratuita permite um banco só, então ele foi dividido em dois schemas,
+`estoque` e `faturamento`. Cada serviço entra com a **identidade gerenciada** do App Service
+(sem senha em lugar nenhum), é dono só do próprio schema e cai nele por padrão. O isolamento
+continua garantido pelo banco: o Faturamento não tem permissão nem para ler uma tabela do
+Estoque, e a baixa de saldo segue indo por HTTP.
+
+**O banco pausa quando ninguém usa.** Na subida, o serviço espera o banco acordar (erro 40613)
+antes de aplicar as migrations, em vez de cair na primeira tentativa.
 
 ---
 

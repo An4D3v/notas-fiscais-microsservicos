@@ -5,7 +5,9 @@ using NotasFiscais.Faturamento.Api.Dados;
 using NotasFiscais.Faturamento.Api.Infra;
 using NotasFiscais.Faturamento.Api.Servicos;
 using NotasFiscais.Faturamento.Api.Servicos.IA;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -147,10 +149,33 @@ app.MapNotas();
 using (var escopo = app.Services.CreateScope())
 {
     var db = escopo.ServiceProvider.GetRequiredService<FaturamentoDbContext>();
-    await db.Database.MigrateAsync();
+    var log = escopo.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    await MigrarAsync(db.Database, log);
 }
 
 app.Run();
+
+/// <summary>
+/// Aplica as migrations esperando o banco acordar. No Azure SQL serverless o banco
+/// pausa quando ninguem usa; a primeira conexao o acorda e e recusada enquanto isso
+/// (erros 40613 e vizinhos). Sem a espera, o servico cairia logo na subida.
+/// </summary>
+static async Task MigrarAsync(DatabaseFacade banco, Microsoft.Extensions.Logging.ILogger log)
+{
+    for (var tentativa = 1; ; tentativa++)
+    {
+        try
+        {
+            await banco.MigrateAsync();
+            return;
+        }
+        catch (SqlException e) when (tentativa < 12 && e.Number is 40613 or 40197 or 40501 or 49918 or 49919 or 49920 or -2)
+        {
+            log.LogWarning("Banco indisponivel (erro {Numero}), provavelmente acordando. Nova tentativa em 10 s.", e.Number);
+            await Task.Delay(TimeSpan.FromSeconds(10));
+        }
+    }
+}
 
 /// <summary>
 /// Marcador para os testes de integracao acharem este projeto (WebApplicationFactory
