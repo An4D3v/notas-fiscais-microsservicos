@@ -1,0 +1,319 @@
+.voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  color: var(--k-ink-3);
+  font-size: 13px;
+  font-weight: 520;
+  transition: color 0.12s ease;
+
+  &:hover {
+    color: var(--k-ink);
+  }
+
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+  }
+}
+
+.k-topo {
+  margin-top: 12px;
+}
+
+// ---------------------------------------------------------------------------
+// Montagem por texto
+//
+// É o único bloco com superfície própria na página, e de propósito: é o
+// caminho novo, o que a pessoa não conhece. Tudo o mais é fluxo comum.
+// ---------------------------------------------------------------------------
+.composicao {
+  background: var(--k-surface);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-r);
+  padding: 15px 17px 17px;
+}
+
+.composicao-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 11px;
+}
+
+.k-rotulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icone-ia {
+  font-size: 15px;
+  width: 15px;
+  height: 15px;
+  color: var(--k-accent);
+}
+
+.link-exemplo {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--k-ink-3);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+
+  &:hover {
+    color: var(--k-ink);
+  }
+}
+
+.linha-ia {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.campo-texto {
+  flex: 1;
+
+  textarea {
+    resize: none;
+    line-height: 1.5;
+  }
+}
+
+.botao-ia {
+  height: 40px;
+  min-width: 118px;
+  flex: none;
+}
+
+.spinner-botao {
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+  --mdc-circular-progress-active-indicator-color: rgba(255, 255, 255, 0.85);
+}
+
+// --- resultado da interpretação -------------------------------------------
+.sugestao {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--k-line);
+}
+
+.sugestao-topo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.selo-modo {
+  font-size: 10.5px;
+  font-weight: 660;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: var(--k-accent);
+  border: 1px solid rgba(212, 24, 79, 0.28);
+  padding: 3px 9px;
+  border-radius: 999px;
+
+  // Modo offline não é erro, é degradação prevista: informa sem alarmar.
+  &.offline {
+    color: var(--k-ink-3);
+    border-color: var(--k-line);
+  }
+}
+
+.sugestao-resumo {
+  font-size: 12.5px;
+  color: var(--k-ink-3);
+}
+
+.sugestao-aviso {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: var(--k-r-sm);
+  background: #fdf6e9;
+  border-left: 2px solid #c98a00;
+  color: #6b4a05;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.sugestao-itens {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--k-line-2);
+    font-size: 13.5px;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .desc {
+    flex: 1;
+    color: var(--k-ink-2);
+  }
+
+  .qtd {
+    font-weight: 620;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .saldo,
+  .conf {
+    font-size: 12px;
+    color: var(--k-ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .conf {
+    width: 42px;
+    text-align: right;
+    cursor: help;
+  }
+
+  // Quantidade acima do saldo: só o número muda de cor, sem pintar a linha.
+  .acima .qtd,
+  .acima .saldo {
+    color: var(--k-danger);
+  }
+}
+
+.nao-entendi {
+  font-size: 12.5px;
+  color: var(--k-warn);
+  margin-bottom: 12px;
+  line-height: 1.6;
+
+  strong {
+    display: block;
+    color: var(--k-ink-2);
+    margin-bottom: 2px;
+  }
+}
+
+.sugestao-acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+// ---------------------------------------------------------------------------
+// Escolha manual
+// ---------------------------------------------------------------------------
+.linha-form {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 12px;
+}
+
+.campo-produto {
+  flex: 1;
+
+  mat-icon[matPrefix] {
+    color: var(--k-ink-3);
+    margin-right: 6px;
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+  }
+}
+
+.campo-qtd {
+  width: 88px;
+  flex: none;
+
+  input {
+    text-align: right;
+  }
+}
+
+.botao-add {
+  height: 40px;
+  flex: none;
+}
+
+.opcao {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+}
+
+.opcao-desc {
+  flex: 1;
+  color: var(--k-ink-2);
+}
+
+.opcao-saldo {
+  font-variant-numeric: tabular-nums;
+  font-weight: 580;
+  color: var(--k-ink-2);
+
+  &.zerado {
+    color: var(--k-danger);
+  }
+}
+
+.dica-saldo {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  color: var(--k-ink-3);
+}
+
+// ---------------------------------------------------------------------------
+// Itens e rodapé
+// ---------------------------------------------------------------------------
+.resumo {
+  font-size: 12.5px;
+  color: var(--k-ink-3);
+
+  .sep {
+    color: var(--k-ink-4);
+    margin: 0 3px;
+  }
+}
+
+.qtd {
+  font-weight: 580;
+}
+
+.rodape {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--k-line);
+}
+
+@media (max-width: 700px) {
+  .linha-ia,
+  .linha-form {
+    flex-direction: column;
+  }
+
+  .botao-ia,
+  .botao-add,
+  .campo-qtd {
+    width: 100%;
+  }
+}

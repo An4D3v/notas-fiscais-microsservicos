@@ -1,0 +1,29 @@
+<header class="topo">
+  <a class="marca" routerLink="/produtos" aria-label="Notas Fiscais">
+    <span class="marca-selo"><mat-icon>receipt_long</mat-icon></span>
+    <span class="marca-texto">Notas Fiscais</span>
+  </a>
+
+  <nav class="menu">
+    <a routerLink="/produtos" routerLinkActive="ativo">Produtos</a>
+    <a routerLink="/notas" routerLinkActive="ativo">Notas</a>
+  </nav>
+
+  <!-- Saúde dos dois serviços ao vivo. Quando o Estoque cai, o ponto fica
+       vermelho ANTES de a pessoa tentar imprimir e tomar erro. -->
+  <div class="saude">
+    <nf-indicador-servico nome="Estoque" [noAr]="saude.estoqueNoAr()" />
+    <nf-indicador-servico nome="Faturamento" [noAr]="saude.faturamentoNoAr()" />
+  </div>
+</header>
+
+<!-- Fio de progresso, na emenda exata entre o cabeçalho e o conteúdo. -->
+<div class="trilho">
+  @if (ocupado() > 0) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+</div>
+
+<main class="conteudo">
+  <router-outlet />
+</main>

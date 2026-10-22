@@ -1,0 +1,286 @@
+.voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  color: var(--k-ink-3);
+  font-size: 13px;
+  font-weight: 520;
+  transition: color 0.12s ease;
+
+  &:hover {
+    color: var(--k-ink);
+  }
+
+  mat-icon {
+    font-size: 17px;
+    width: 17px;
+    height: 17px;
+  }
+}
+
+.centro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 70px 0;
+  color: var(--k-ink-2);
+}
+
+// ---------------------------------------------------------------------------
+// Cabeçalho do documento
+// ---------------------------------------------------------------------------
+.cabecalho {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+  margin: 14px 0 4px;
+}
+
+.identidade {
+  .k-rotulo {
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 46px;
+    font-weight: 660;
+    letter-spacing: -1.6px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+
+    // O grifo do número: prefixo discreto que não compete com o dígito.
+    &::before {
+      content: 'nº ';
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: -0.3px;
+      color: var(--k-ink-4);
+      vertical-align: 0.28em;
+    }
+  }
+}
+
+// Ficha técnica em colunas: rótulo miúdo em cima, valor embaixo.
+.ficha {
+  display: flex;
+  gap: 34px;
+  margin: 0;
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  dt {
+    font-size: 11px;
+    font-weight: 620;
+    letter-spacing: 0.9px;
+    text-transform: uppercase;
+    color: var(--k-ink-3);
+  }
+
+  dd {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--k-ink);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Alertas
+// ---------------------------------------------------------------------------
+.alerta {
+  display: flex;
+  gap: 11px;
+  padding: 13px 15px;
+  border-radius: var(--k-r);
+  margin-top: 22px;
+  font-size: 13.5px;
+
+  strong {
+    font-weight: 600;
+  }
+
+  p {
+    margin: 4px 0 0;
+    line-height: 1.55;
+  }
+
+  mat-icon {
+    flex: none;
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+    margin-top: 1px;
+  }
+}
+
+// Fundo lavado e uma barra na lateral: chama sem virar cartaz.
+.alerta-atencao {
+  background: #fdf6e9;
+  border-left: 2px solid #c98a00;
+  color: #6b4a05;
+}
+
+.alerta-processando {
+  background: #f1f2fb;
+  border-left: 2px solid #5a68c9;
+  color: #37408a;
+}
+
+// ---------------------------------------------------------------------------
+// Itens
+// ---------------------------------------------------------------------------
+.resumo {
+  font-size: 12.5px;
+  color: var(--k-ink-3);
+
+  .sep {
+    color: var(--k-ink-4);
+    margin: 0 3px;
+  }
+}
+
+.qtd {
+  font-weight: 580;
+}
+
+// ---------------------------------------------------------------------------
+// Comprovante da baixa
+// ---------------------------------------------------------------------------
+.comprovante-titulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--k-ok);
+
+  mat-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+  }
+}
+
+.repetida {
+  font-size: 11px;
+  font-weight: 620;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #5a68c9;
+}
+
+.lista-saldos {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 22px;
+    border-bottom: 1px solid var(--k-line-2);
+    font-size: 14px;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .desc {
+    flex: 1;
+    color: var(--k-ink-2);
+  }
+
+  // A saída e o saldo final ficam em colunas fixas, alinhados entre si,
+  // para o olho comparar as linhas de cima a baixo sem esforço.
+  .mov {
+    width: 56px;
+    text-align: right;
+    color: var(--k-danger);
+    font-weight: 560;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .novo {
+    width: 56px;
+    text-align: right;
+    font-weight: 620;
+    color: var(--k-ok);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Ação
+// ---------------------------------------------------------------------------
+.acoes {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1px solid var(--k-line);
+}
+
+.botao-imprimir {
+  height: 42px;
+  padding: 0 20px;
+  font-size: 14px;
+}
+
+.spinner-botao {
+  display: inline-block;
+  margin-right: 9px;
+  vertical-align: middle;
+  --mdc-circular-progress-active-indicator-color: rgba(255, 255, 255, 0.85);
+}
+
+.dica-acao {
+  font-size: 12.5px;
+  color: var(--k-ink-3);
+  max-width: 44ch;
+  line-height: 1.5;
+}
+
+.fechada {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--k-ink-2);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--k-ok);
+  }
+}
+
+@media (max-width: 700px) {
+  .cabecalho {
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .ficha {
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .identidade h1 {
+    font-size: 38px;
+  }
+}

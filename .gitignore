@@ -1,0 +1,32 @@
+# ---------- .NET ----------
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+.vs/
+
+# ---------- Node / Angular ----------
+node_modules/
+dist/
+.angular/
+npm-debug.log*
+
+# ---------- Ambiente ----------
+# Segredos NUNCA entram no repositorio. A chave da IA fica em user-secrets
+# (dotnet user-secrets) ou na variavel de ambiente GEMINI_API_KEY.
+.env
+.env.local
+*.env
+
+# ---------- Ferramentas locais ----------
+.claude/
+.idea/
+
+# ---------- Midia ----------
+*.mp4
+*.mkv
+
+# ---------- Sistema ----------
+Thumbs.db
+.DS_Store

@@ -1,0 +1,63 @@
+.barra-busca {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.busca {
+  width: 100%;
+  max-width: 340px;
+
+  mat-icon[matPrefix] {
+    color: var(--k-ink-3);
+    margin-right: 6px;
+    font-size: 19px;
+    width: 19px;
+    height: 19px;
+  }
+}
+
+.contagem {
+  font-size: 12.5px;
+  color: var(--k-ink-3);
+  white-space: nowrap;
+}
+
+.cel-desc {
+  color: var(--k-ink);
+}
+
+// O saldo é o dado mais consultado desta tela, então ganha um pouco mais de
+// peso que o resto da linha — mas continua preto até haver motivo para cor.
+.saldo {
+  font-weight: 580;
+  font-variant-numeric: tabular-nums;
+}
+
+.saldo-baixo {
+  color: var(--k-warn);
+}
+
+// Zerado é o único estado que muda o que a pessoa faz a seguir, então é o
+// único que recebe destaque de verdade.
+.saldo-zero {
+  color: var(--k-danger);
+  font-weight: 620;
+}
+
+@media (max-width: 700px) {
+  .barra-busca {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .busca {
+    max-width: none;
+  }
+
+  .contagem {
+    display: none;
+  }
+}

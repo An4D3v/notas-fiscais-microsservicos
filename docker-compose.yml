@@ -1,0 +1,34 @@
+# Alternativa para quem nao tem LocalDB (Linux, macOS, ou Windows sem SQL Server
+# instalado). Sobe um SQL Server 2022 em container.
+#
+#   docker compose up -d
+#
+# Depois aponte os dois servicos para ele, em outro terminal:
+#
+#   set ConnectionStrings__Estoque=Server=localhost,1433;Database=NotasEstoque;User Id=sa;Password=Notas@Local2026;TrustServerCertificate=True
+#   set ConnectionStrings__Faturamento=Server=localhost,1433;Database=NotasFaturamento;User Id=sa;Password=Notas@Local2026;TrustServerCertificate=True
+#
+# (no PowerShell use $env:ConnectionStrings__Estoque = "..."; no bash, export)
+#
+# Os bancos e as tabelas sao criados sozinhos na primeira execucao, pelas migrations.
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: notas-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Notas@Local2026"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    volumes:
+      - notas-sqlserver-dados:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  notas-sqlserver-dados:

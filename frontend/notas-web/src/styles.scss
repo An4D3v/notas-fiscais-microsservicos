@@ -1,0 +1,354 @@
+@use '@angular/material' as mat;
+
+// ===========================================================================
+// SISTEMA VISUAL
+//
+// Princípio: nota fiscal é documento, não painel. Então a tela se comporta
+// como papel bem diagramado — hierarquia pela tipografia, separação por fio
+// de cabelo, e cor reservada para o que exige decisão.
+//
+// Regras que valem em todo lugar:
+//   1. Nenhum gradiente decorativo.
+//   2. Nenhuma caixa dentro de caixa. Um nível de superfície, e olhe lá.
+//   3. Cor só quando muda o que a pessoa faria. Saldo normal é preto.
+//   4. Número é tabular e alinhado à direita, sempre.
+// ===========================================================================
+
+html {
+  height: 100%;
+  color-scheme: light;
+
+  @include mat.theme((
+    color: (primary: mat.$azure-palette, tertiary: mat.$azure-palette),
+    typography: (plain-family: (Inter, 'Segoe UI', system-ui, sans-serif),
+                 brand-family: (Inter, 'Segoe UI', system-ui, sans-serif)),
+    density: -1,
+  ));
+}
+
+:root {
+  // --- tinta -------------------------------------------------------------
+  --k-ink:      #131a24;   // texto principal
+  --k-ink-2:    #59636f;   // texto de apoio
+  --k-ink-3:    #8b95a1;   // legendas, cabeçalho de tabela
+  --k-ink-4:    #aeb6c0;   // marca d'água, placeholder
+
+  // --- superfícies -------------------------------------------------------
+  --k-bg:       #fbfbfc;   // fundo da página
+  --k-surface:  #ffffff;   // superfície de conteúdo
+  --k-sunken:   #f5f6f8;   // depressão sutil (cabeçalho de tabela, código)
+
+  // --- linhas ------------------------------------------------------------
+  --k-line:     #eceef2;   // fio de cabelo padrão, bem lavado
+  --k-line-2:   #f4f5f8;   // divisória entre linhas, quase invisível
+  --k-borda-campo: #d8dde4; // contorno de input: precisa ser visível, senão
+                            // o campo não parece preenchível
+
+  // --- cor com significado ----------------------------------------------
+  --k-accent:   #d4184f;   // sotaque da marca. Usado com parcimônia.
+  --k-ok:       #12734c;
+  --k-warn:     #9a6100;
+  --k-danger:   #b4283c;
+  --k-info:     #3a4fb8;
+
+  // --- ritmo -------------------------------------------------------------
+  --k-r:        14px;      // raio padrão
+  --k-r-sm:     9px;
+}
+
+// Material fala em --mat-sys-*. Em vez de brigar com ele componente a
+// componente, realinho os tokens do sistema com a paleta acima. Assim
+// qualquer componente novo já nasce coerente.
+:root {
+  --mat-sys-primary: var(--k-ink);
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: var(--k-sunken);
+  --mat-sys-on-primary-container: var(--k-ink);
+
+  --mat-sys-background: var(--k-bg);
+  --mat-sys-surface: var(--k-surface);
+  --mat-sys-on-surface: var(--k-ink);
+  --mat-sys-on-surface-variant: var(--k-ink-2);
+
+  --mat-sys-surface-container-low: var(--k-surface);
+  --mat-sys-surface-container: var(--k-sunken);
+  --mat-sys-surface-container-high: var(--k-sunken);
+  --mat-sys-surface-container-highest: var(--k-sunken);
+
+  // O Material 3 separa os dois de proposito, e eu tinha apagado a distincao:
+  //   outline         = contorno de coisa interativa (input, botao vazado)
+  //   outline-variant = divisoria passiva (linha de tabela, separador)
+  // Igualar os dois deixa o campo de formulario sem borda visivel.
+  --mat-sys-outline: var(--k-borda-campo);
+  --mat-sys-outline-variant: var(--k-line);
+
+  --mat-sys-error: var(--k-danger);
+  --mat-sys-secondary: var(--k-ink-2);
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--k-bg);
+  color: var(--k-ink);
+  font-family: Inter, 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  // Números com largura fixa: coluna de saldo e quantidade param de dançar
+  // quando o valor muda de 9 para 10.
+  font-variant-numeric: tabular-nums;
+}
+
+// ---------------------------------------------------------------------------
+// Peças reaproveitadas entre as telas
+// ---------------------------------------------------------------------------
+
+// Cabeçalho de página: o título é o único elemento grande da tela.
+.k-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 4px 0 26px;
+
+  h1 {
+    margin: 0;
+    font-size: 27px;
+    font-weight: 640;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+
+  .k-sub {
+    margin: 5px 0 0;
+    font-size: 13.5px;
+    color: var(--k-ink-2);
+    max-width: 62ch;
+  }
+}
+
+// Rótulo miúdo, para nomear seções sem competir com o título.
+.k-rotulo {
+  font-size: 11px;
+  font-weight: 620;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  color: var(--k-ink-3);
+}
+
+// Seção: separada por um fio, não por uma caixa.
+.k-secao {
+  border-top: 1px solid var(--k-line);
+  padding-top: 18px;
+  margin-top: 26px;
+}
+
+.k-secao-topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+// Código de produto: monoespaçado resolve. Não precisa de fundo.
+.k-codigo {
+  font-family: 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+  font-size: 12.5px;
+  letter-spacing: -0.2px;
+  color: var(--k-ink-2);
+}
+
+// Ponto de status. Cor num ponto de 6px comunica igual e não grita.
+.k-ponto {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: none;
+}
+
+// ---------------------------------------------------------------------------
+// Quadro: a única superfície da página.
+//
+// Um nível só, nunca aninhado. Ele existe para o conteúdo não ficar encostado
+// na borda da tela: linha atravessando de ponta a ponta faz a informação
+// parecer recortada, por mais limpo que esteja o resto.
+// ---------------------------------------------------------------------------
+.k-quadro {
+  background: var(--k-surface);
+  border: 1px solid var(--k-line);
+  border-radius: var(--k-r);
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.032);
+}
+
+// ---------------------------------------------------------------------------
+// Tabela
+// ---------------------------------------------------------------------------
+.k-tabela {
+  width: 100%;
+  background: transparent;
+
+  .mat-mdc-header-row {
+    background: transparent;
+    height: 42px;
+  }
+
+  .mat-mdc-header-cell {
+    font-size: 11px;
+    font-weight: 620;
+    letter-spacing: 0.9px;
+    text-transform: uppercase;
+    color: var(--k-ink-3);
+    border-bottom-color: var(--k-line);
+  }
+
+  .mat-mdc-cell {
+    font-size: 14px;
+    color: var(--k-ink);
+    border-bottom-color: var(--k-line-2);
+  }
+
+  // Respiro horizontal. As colunas das pontas recuam mais, para o texto não
+  // nascer colado na borda do quadro.
+  .mat-mdc-header-cell,
+  .mat-mdc-cell {
+    padding: 0 16px;
+
+    &:first-of-type {
+      padding-left: 22px;
+    }
+
+    &:last-of-type {
+      padding-right: 22px;
+    }
+  }
+
+  .mat-mdc-row {
+    height: 54px;
+    transition: background 0.1s ease;
+  }
+
+  // Última linha sem fio: o bloco termina no ar, mais leve.
+  .mat-mdc-row:last-child .mat-mdc-cell {
+    border-bottom: none;
+  }
+
+  .k-num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .k-acoes {
+    text-align: right;
+    white-space: nowrap;
+    width: 1%;
+  }
+}
+
+// Ações da linha só aparecem no hover. Some o ruído de 12 ícones repetidos
+// numa lista, e a informação (código, descrição, saldo) fica sozinha na tela.
+.k-linha-acoes .k-acoes .mat-mdc-icon-button {
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.k-linha-acoes:hover .k-acoes .mat-mdc-icon-button,
+.k-linha-acoes:focus-within .k-acoes .mat-mdc-icon-button {
+  opacity: 1;
+}
+@media (hover: none) {
+  .k-linha-acoes .k-acoes .mat-mdc-icon-button { opacity: 1; }
+}
+
+// ---------------------------------------------------------------------------
+// Estado vazio: uma frase, sem ilustração e sem caixa.
+// ---------------------------------------------------------------------------
+.k-vazio {
+  padding: 46px 22px;
+  margin: 0;
+  color: var(--k-ink-3);
+  font-size: 14px;
+  text-align: center;
+}
+
+// ---------------------------------------------------------------------------
+// Ajustes finos no Material
+// ---------------------------------------------------------------------------
+
+// Botões: raio menor e sem sombra. Sombra em botão de formulário é peso
+// visual que não corresponde a nenhuma elevação real.
+.mat-mdc-button-base {
+  --mdc-filled-button-container-shape: var(--k-r-sm);
+  --mdc-outlined-button-container-shape: var(--k-r-sm);
+  --mdc-text-button-container-shape: var(--k-r-sm);
+  --mdc-protected-button-container-elevation: 0;
+  letter-spacing: 0;
+  font-weight: 560;
+}
+
+// Campo de formulário mais discreto: a borda é fio, não moldura.
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-outline-color: var(--k-borda-campo);
+  --mdc-outlined-text-field-hover-outline-color: #b9c1cc;
+  --mdc-outlined-text-field-focus-outline-color: var(--k-ink);
+  --mdc-outlined-text-field-outline-width: 1px;
+  --mdc-outlined-text-field-focus-outline-width: 1px;
+  --mdc-outlined-text-field-container-shape: var(--k-r-sm);
+  --mat-form-field-container-text-size: 14px;
+}
+
+.mat-mdc-paginator {
+  background: transparent;
+  color: var(--k-ink-2);
+  font-size: 13px;
+  border-top: 1px solid var(--k-line-2);
+
+  .mat-mdc-paginator-container {
+    padding: 0 12px 0 22px;
+    min-height: 52px;
+  }
+}
+
+.mat-mdc-dialog-surface {
+  border-radius: 14px !important;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 12px 32px rgba(16, 24, 40, 0.14) !important;
+}
+
+.mat-mdc-tooltip {
+  font-size: 12px;
+}
+
+// ---------------------------------------------------------------------------
+// Avisos (snackbar). A cor carrega significado: verde deu certo, âmbar exige
+// atenção mas nada quebrou, vermelho a operação não aconteceu.
+// ---------------------------------------------------------------------------
+.aviso-sucesso {
+  --mdc-snackbar-container-color: #10321f;
+  --mdc-snackbar-supporting-text-color: #eaf5ee;
+  --mat-snack-bar-button-color: #7fe0a8;
+}
+
+.aviso-atencao {
+  --mdc-snackbar-container-color: #33240a;
+  --mdc-snackbar-supporting-text-color: #fbf1e0;
+  --mat-snack-bar-button-color: #ffd08a;
+}
+
+.aviso-erro {
+  --mdc-snackbar-container-color: #3a1017;
+  --mdc-snackbar-supporting-text-color: #fdeced;
+  --mat-snack-bar-button-color: #ff9aa6;
+}
+
+.mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-shape: 10px;
+}
+
+// O texto do aviso pode ser longo (as mensagens de indisponibilidade explicam
+// o que aconteceu e o que fazer). Sem isto ele fica cortado numa linha só.
+.mat-mdc-snack-bar-label {
+  line-height: 1.5;
+  font-size: 13.5px;
+}

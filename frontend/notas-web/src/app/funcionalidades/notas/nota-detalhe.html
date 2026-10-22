@@ -1,0 +1,156 @@
+<a routerLink="/notas" class="voltar">
+  <mat-icon>arrow_back</mat-icon>
+  Notas
+</a>
+
+@if (carregando()) {
+  <div class="centro"><mat-spinner diameter="30" /></div>
+} @else if (nota(); as n) {
+  <!-- A nota se apresenta como documento: o número é o maior elemento da
+       tela, e o resto é ficha técnica embaixo dele. -->
+  <header class="cabecalho">
+    <div class="identidade">
+      <span class="k-rotulo">Nota fiscal</span>
+      <h1>{{ n.numero }}</h1>
+    </div>
+
+    <dl class="ficha">
+      <div>
+        <dt>Status</dt>
+        <dd><nf-selo-status [status]="n.status" /></dd>
+      </div>
+      <div>
+        <dt>Criada</dt>
+        <dd>{{ n.criadaEm | date: 'dd/MM/yyyy HH:mm' }}</dd>
+      </div>
+      <div>
+        <dt>Impressa</dt>
+        <dd>{{ n.impressaEm ? (n.impressaEm | date: 'dd/MM/yyyy HH:mm') : '—' }}</dd>
+      </div>
+    </dl>
+  </header>
+
+  <!-- Aviso do que aconteceu na última tentativa, guardado pelo servidor. -->
+  @if (n.ultimoErro && n.status !== 'Fechada') {
+    <div class="alerta alerta-atencao">
+      <mat-icon>error_outline</mat-icon>
+      <div>
+        <strong>A última tentativa de impressão não foi concluída.</strong>
+        <p>{{ n.ultimoErro }}</p>
+      </div>
+    </div>
+  }
+
+  @if (n.status === 'Processando') {
+    <div class="alerta alerta-processando">
+      <mat-icon>hourglass_top</mat-icon>
+      <div>
+        <strong>Esta nota ficou em processamento.</strong>
+        <p>
+          O sistema pediu a baixa ao Estoque e não conseguiu confirmar o desfecho. Nenhum saldo foi
+          perdido: clique em Imprimir de novo e o sistema descobre o que aconteceu antes de agir.
+          Se ninguém clicar, a regularização acontece sozinha em segundo plano.
+        </p>
+      </div>
+    </div>
+  }
+
+  <section class="k-secao">
+    <div class="k-secao-topo">
+      <span class="k-rotulo">Produtos</span>
+      <span class="resumo">
+        {{ n.itens.length }} produto{{ n.itens.length === 1 ? '' : 's' }}
+        <span class="sep">·</span> {{ totalUnidades() }} unidades
+      </span>
+    </div>
+
+    <div class="k-quadro">
+      <table mat-table [dataSource]="n.itens" class="k-tabela">
+      <ng-container matColumnDef="codigo">
+        <th mat-header-cell *matHeaderCellDef>Código</th>
+        <td mat-cell *matCellDef="let i"><span class="k-codigo">{{ i.codigo }}</span></td>
+      </ng-container>
+
+      <ng-container matColumnDef="descricao">
+        <th mat-header-cell *matHeaderCellDef>Descrição</th>
+        <td mat-cell *matCellDef="let i">{{ i.descricao }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="quantidade">
+        <th mat-header-cell *matHeaderCellDef class="k-num">Qtd</th>
+        <td mat-cell *matCellDef="let i" class="k-num qtd">{{ i.quantidade }}</td>
+      </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+        <tr mat-row *matRowDef="let l; columns: colunas"></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- Comprovante da baixa: o que saiu do estoque e qual o saldo agora. -->
+  @if (saldos().length > 0) {
+    <section class="k-secao comprovante">
+      <div class="k-secao-topo">
+        <span class="k-rotulo comprovante-titulo">
+          <mat-icon>check_circle</mat-icon> Saldo atualizado no Estoque
+        </span>
+        @if (foiRepetida()) {
+          <span class="repetida">pedido repetido · nada foi baixado de novo</span>
+        }
+      </div>
+
+      <ul class="lista-saldos k-quadro">
+        @for (s of saldos(); track s.produtoId) {
+          <li>
+            <span class="k-codigo">{{ s.codigo }}</span>
+            <span class="desc">{{ s.descricao }}</span>
+            <span class="mov">−{{ s.quantidade }}</span>
+            <span class="novo">{{ s.saldoResultante }}</span>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  <!-- Zona de ação: separada por um fio, para a decisão ficar isolada de tudo
+       que é leitura. -->
+  <div class="acoes">
+    @if (n.status === 'Fechada') {
+      <p class="fechada">
+        <mat-icon>lock</mat-icon>
+        Nota fechada. Uma nota impressa não pode ser impressa de novo.
+      </p>
+    } @else {
+      @if (imprimindo()) {
+        <button matButton="filled" class="botao-imprimir" disabled>
+          <mat-spinner diameter="17" class="spinner-botao" />
+          Processando...
+        </button>
+      } @else {
+        <button
+          matButton="filled"
+          class="botao-imprimir"
+          [disabled]="!podeImprimir()"
+          (click)="imprimir()"
+        >
+          <mat-icon>print</mat-icon>
+          Imprimir nota
+        </button>
+      }
+
+      <span class="dica-acao">
+        @if (imprimindo()) {
+          Falando com o serviço de Estoque. Se ele estiver instável, o sistema tenta de novo
+          sozinho antes de desistir.
+        } @else {
+          Ao imprimir, o saldo dos produtos é baixado e a nota é fechada.
+        }
+      </span>
+    }
+  </div>
+} @else {
+  <div class="centro">
+    <p>Nota não encontrada.</p>
+    <a matButton="filled" routerLink="/notas">Voltar para a lista</a>
+  </div>
+}

@@ -1,0 +1,15 @@
+# Normaliza o fim de linha no repositorio (LF), deixando cada sistema usar o
+# seu na copia local. Sem isto, um clone no Linux/macOS pode vir com CRLF e
+# quebrar scripts, e o diff fica cheio de mudanca que ninguem fez.
+* text=auto eol=lf
+
+# Arquivos que precisam de CRLF no Windows.
+*.sln         text eol=crlf
+*.cmd         text eol=crlf
+*.bat         text eol=crlf
+
+# Binarios: nunca converter.
+*.png         binary
+*.jpg         binary
+*.ico         binary
+*.pdf         binary

@@ -1,0 +1,87 @@
+<header class="k-topo">
+  <div>
+    <h1>Produtos</h1>
+    <p class="k-sub">Cadastro e saldo em estoque. Servido pelo microserviço de Estoque, na porta 5001.</p>
+  </div>
+  <button matButton="filled" (click)="novo()">
+    <mat-icon>add</mat-icon>
+    Novo produto
+  </button>
+</header>
+
+<div class="barra-busca">
+  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="busca">
+    <mat-icon matPrefix>search</mat-icon>
+    <input
+      matInput
+      [ngModel]="termoBusca()"
+      (ngModelChange)="aoDigitar($event)"
+      placeholder="Buscar por código ou descrição"
+      autocomplete="off"
+    />
+    @if (termoBusca()) {
+      <button matIconButton matSuffix (click)="limparBusca()" aria-label="Limpar busca">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </mat-form-field>
+
+  <span class="contagem">
+    {{ total() }} {{ total() === 1 ? 'produto' : 'produtos' }}
+  </span>
+</div>
+
+<div class="k-quadro">
+  <table mat-table [dataSource]="produtos()" class="k-tabela">
+  <ng-container matColumnDef="codigo">
+    <th mat-header-cell *matHeaderCellDef>Código</th>
+    <td mat-cell *matCellDef="let p"><span class="k-codigo">{{ p.codigo }}</span></td>
+  </ng-container>
+
+  <ng-container matColumnDef="descricao">
+    <th mat-header-cell *matHeaderCellDef>Descrição</th>
+    <td mat-cell *matCellDef="let p" class="cel-desc">{{ p.descricao }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="saldo">
+    <th mat-header-cell *matHeaderCellDef class="k-num">Saldo</th>
+    <td mat-cell *matCellDef="let p" class="k-num">
+      <!-- Saldo normal é só um número preto. Cor só quando existe uma
+           decisão a tomar: acabou, ou está por acabar. -->
+      <span class="saldo" [class]="classeSaldo(p.saldo)">{{ p.saldo }}</span>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="acoes">
+    <th mat-header-cell *matHeaderCellDef class="k-acoes"></th>
+    <td mat-cell *matCellDef="let p" class="k-acoes">
+      <button matIconButton (click)="editar(p)" matTooltip="Editar">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button matIconButton (click)="excluir(p)" matTooltip="Excluir">
+        <mat-icon>delete_outline</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+    <tr mat-row *matRowDef="let linha; columns: colunas" class="k-linha-acoes"></tr>
+  </table>
+
+  @if (produtos().length === 0) {
+    <p class="k-vazio">
+      @if (termoBusca()) {
+        Nenhum produto encontrado para "{{ termoBusca() }}".
+      } @else {
+        Nenhum produto cadastrado ainda.
+      }
+    </p>
+  }
+
+  <mat-paginator
+    [length]="total()"
+    [pageSize]="tamanhoPagina()"
+    [pageSizeOptions]="[5, 10, 25, 50]"
+    showFirstLastButtons
+  />
+</div>
